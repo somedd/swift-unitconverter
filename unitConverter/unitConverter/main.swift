@@ -81,4 +81,10 @@ func unitConverter (_ inputString : String) {
 }
 var str = readLine()
 unitConverter(str!)
-
+/* 추가로 구현 or 수정할 것들
+ 1. q or quit을 입력하면 종료
+ 2. 지원하지 않는단위를 받을경우 "지원하지 않는 단위입니다." 출력
+ 3. 옵셔널 처리할것들 처리
+ 4. ex) 182cm를 입력하면, m, inch, yard를 모두 출력 (case 1)
+ 5. ex) 182cm m,inch 를 입력하면, m, inch를 출력
+*/
