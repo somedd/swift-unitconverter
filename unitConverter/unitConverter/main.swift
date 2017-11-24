@@ -39,6 +39,7 @@ func searchUnit (_ inputString : String) -> (key : String?, unitDic : [String:Do
     for key in units.volumeDic.keys {
         if inputString.hasSuffix(key) {return (key, units.volumeDic)}
     }
+    print("지원하지 않는 단위입니다.")
     return (nil, units.error)
 }
 //기본단위인지 확인하는 함수
@@ -57,7 +58,7 @@ func checkBase (_ unit : String) -> Bool {
 //숫자를 빼는 함수
 func sliceString (_ str : String, _ unit : String) -> Double {
     let numbers =  str.components(separatedBy: "\(unit)")
-    return Double(numbers[0])!
+    return Double(numbers[0]) ?? 0
 }
 func unitConverter (_ inputString : String) {
     let strArr = inputstrToArr(inputString)
