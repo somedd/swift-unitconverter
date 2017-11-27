@@ -1,4 +1,5 @@
 import Foundation
+
 //기본단위
 enum Baseunits : String {
     case cm
@@ -16,27 +17,21 @@ struct units {
 //입력받은 문자열을 배열로 나누기
 func inputstrToArr (_ string : String) -> Array<String> {
     var arrOfStr = string.components(separatedBy: " ")
-    switch arrOfStr.count {
-    case 1: //inputUnit만 입력했을 경우
+    if arrOfStr.count == 1{
         return arrOfStr
-    default:
-        let tempArr = arrOfStr[1].components(separatedBy: ",")// 출력단위에 ","가 포함되어 있을 경우
-        if tempArr.count == 2 {
-            arrOfStr[1] = tempArr[0]
-            arrOfStr.append(tempArr[1])
-        }
-    return arrOfStr
     }
+    let tempArr = arrOfStr[1].components(separatedBy: ",")// 출력단위에 ","가 포함되어 있을 경우
+    if tempArr.count == 2 {
+        arrOfStr[1] = tempArr[0]
+        arrOfStr.append(tempArr[1])
+    }
+    return arrOfStr
 }
 //계산하는 함수
-func calculNum (_ inputnum : Double, _ inputunit : (String?,[String:Double]), _ outputunit :(String?,[String:Double]) ,_ isBase : Bool) -> Double {
+func calculNum (_ inputnum : Double, _ inputunit : (String?,[String:Double]), _ outputunit :(String?,[String:Double])) -> String {
     var result : Double = 0.0
-    if isBase == true { //기본단위일 경우
-        result = inputnum / (outputunit.1)[outputunit.0!]!
-    } else {
         result =  inputnum * (inputunit.1)[inputunit.0!]! / (outputunit.1)[outputunit.0!]!
-    }
-    return result
+    return String(result) + outputunit.0!
 }
 //단위를 찾는 함수
 func searchUnit (_ inputString : String) -> (key : String?, unitDic : [String:Double]){
@@ -51,82 +46,88 @@ func searchUnit (_ inputString : String) -> (key : String?, unitDic : [String:Do
     }
     return (nil, units.error)
 }
-//기본단위인지 확인하는 함수
-func checkBase (_ unit : String) -> Bool {
-    switch unit {
-    case Baseunits.cm.rawValue:
-        return true
-    case Baseunits.g.rawValue :
-        return true
-    case Baseunits.l.rawValue :
-        return true
-    default:
-        return false
-    }
-}
-//숫자를 빼는 함수
+//inputstring에서 숫자를 리턴하는 함수
 func sliceString (_ str : String, _ unit : String) -> Double {
     let numbers =  str.components(separatedBy: "\(unit)")
     return Double(numbers[0]) ?? 0
 }
+//지원하는 단위인지 확인하는 함수
+func checkUnit (_ str : String?) -> Bool {
+    if str == nil {
+        print("지원하지 않는 단위가 포함되어 있습니다. 다시 입력해주세요.")
+        return false
+    }
+    return true
+}
+//안내문 출력 함수
+func printMsg () {
+    print("==== 지원가능한 단위 ====")
+    var lenghtUnit : String = "길이 : "
+    var weightUnit : String = "무게 : "
+    var volumeUnit : String = "부피 : "
+    for key in units.lengthDic.keys {
+        lenghtUnit += "\(key)" + " "
+    }
+    for key in units.weightDic.keys {
+        weightUnit += "\(key)" + " "
+    }
+    for key in units.volumeDic.keys {
+        volumeUnit += "\(key)" + " "
+    }
+    print(lenghtUnit + "\n" + weightUnit + "\n" + volumeUnit)
+    print("=====================")
+}
+//결과값을 출력해주는 함수
+func printResult () {
+    
+}
+//단위변환 함수
 func unitConverter (_ inputString : String) {
     let strArr = inputstrToArr(inputString)
     let inputUnit = searchUnit(strArr[0])
+    if checkUnit(inputUnit.key) == false { //
+        return
+    }
     let inputNum = sliceString(strArr[0], inputUnit.key!)
-    let chkBase = checkBase(inputUnit.key!)
     switch strArr.count {
     case 0...1:
-        if inputUnit.key == nil {
-            print("지원하지 않는 단위가 포함되어 있습니다. 다시 입력해주세요.")
-            return
-        }
         var resultStr : String = ""
         for unit in inputUnit.unitDic {
             if unit.key != inputUnit.key {
-                resultStr += String(calculNum(inputNum, inputUnit, (unit.key, inputUnit.unitDic) , chkBase)) + unit.key + " "
+                resultStr += String(calculNum(inputNum, inputUnit, (unit.key, inputUnit.unitDic))) + unit.key + " "
             }
         }
-        print(resultStr)
+        print("변환값 : " + resultStr)
         return
     case 2:
         let outputUnit = searchUnit(strArr[1])
-        if inputUnit.key == nil || outputUnit.key == nil {
-            print("지원하지 않는 단위가 포함되어 있습니다. 다시 입력해주세요.")
+        if checkUnit(outputUnit.key) == false {
             return
         }
-        let resultNum = calculNum(inputNum, inputUnit, outputUnit, chkBase)
-        print("\(resultNum)" + outputUnit.key!)
+        let resultNum = calculNum(inputNum, inputUnit, outputUnit)
+        print("변환값 : " + "\(resultNum)" + outputUnit.key!)
         return
     case 3:
         let outputUnit1 = searchUnit(strArr[1])
         let outputUnit2 = searchUnit(strArr[2])
-        if inputUnit.key == nil || outputUnit1.key == nil || outputUnit2.key == nil{
-            print("지원하지 않는 단위가 포함되어 있습니다. 다시 입력해주세요.")
+        if checkUnit(outputUnit1.key) == false || checkUnit(outputUnit2.key) == false {
             return
         }
         var resultNum : String = ""
-        resultNum = String(calculNum(inputNum, inputUnit, outputUnit1, chkBase)) + outputUnit1.key! + " " +
-                    String(calculNum(inputNum, inputUnit, outputUnit2, chkBase)) + outputUnit2.key!
-        print(resultNum)
+        resultNum = String(calculNum(inputNum, inputUnit, outputUnit1)) + outputUnit1.key! + " " +
+                    String(calculNum(inputNum, inputUnit, outputUnit2)) + outputUnit2.key!
+        print("변환값 : " + resultNum)
         return
     default:
         print("다시 입력해주세요.")
     }
 }
-
 var boolVal : Bool = true
 mainLoop: while boolVal {
+    printMsg()
     let inputStr = readLine()
     if inputStr == "q" || inputStr == "quit" {
         break;
     }
     unitConverter(inputStr!)
 }
-/* 추가로 구현 or 수정할 것들
- 1. q or quit을 입력하면 종료 / ok
- 2. 지원하지 않는단위를 받을경우 "지원하지 않는 단위입니다." 출력 / ok
- 3. 옵셔널 처리할것들 처리
- 4. ex) 182cm를 입력하면, m, inch, yard를 모두 출력 (case 1) /ok
- 5. ex) 182cm m,inch 를 입력하면, m, inch를 출력 / ok
- 옵셔널 처리를 어케해야되는지 헷갈림.
-*/
