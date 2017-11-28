@@ -97,7 +97,7 @@ func unitConverter (_ inputString : String) {
     case 0...1: //inputUnit만 입력했을 경우 ex) "180cm"
         var resultArr : [String] = []
         for unit in inputUnit.unitDic {
-            if unit.key != inputUnit.key {
+            if unit.key != inputUnit.key { //입력된 inputUnit을 제외한 같은 범주 내 모든 단위 출력
                 resultArr.append(calculNum(inputNum, inputUnit, (unit.key, inputUnit.unitDic)))
             }
         }
