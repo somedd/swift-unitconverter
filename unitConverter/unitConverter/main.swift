@@ -1,52 +1,46 @@
 import Foundation
-typealias unitsDic = [String : Double] //하나의 단위범주 형태
-//기본단위
-enum Baseunits : String {
-    case cm
-    case g
-    case l
-    case none
-    }
+typealias UnitsDic = [String : Double] //하나의 단위범주 형태
+//calculNum 함수명도 함수의 시그니처를 보면 주석을 보지 않아도 동작과, 의미를 유추할 수 있도록 작성해주세요.
 //단위의 집합 구조체
-struct units {
-    static let lengthDic : unitsDic = ["cm" : 1, "m" : 100, "inch" : 2.54, "yard" : 91.44]
-    static let weightDic : unitsDic = ["g" : 1, "kg" : 1000, "oz" : 28.3495, "lb" : 453.592 ]
-    static let volumeDic : unitsDic = ["l" : 1, "pt" :0.473176, "qt" : 0.946353, "gal" : 3.78541]
-    static let error : unitsDic = ["error" : 0]
+struct Units {
+    static let lengthDictionary : UnitsDic = ["cm" : 1, "m" : 100, "inch" : 2.54, "yard" : 91.44]
+    static let weightDictionary : UnitsDic = ["g" : 1, "kg" : 1000, "oz" : 28.3495, "lb" : 453.592 ]
+    static let volumeDictionary : UnitsDic = ["l" : 1, "pt" :0.473176, "qt" : 0.946353, "gal" : 3.78541]
+    static let error : UnitsDic = ["error" : 0]
 }
 //입력받은 문자열을 배열로 분리하는 함수
 func seperateInputstr (_ inputString : String) -> Array<String> {
-    var arrOfStr = inputString.components(separatedBy: " ") //1. " "를 기준으로 분리
-    if arrOfStr.count == 1{                                 //분리되지 않았을 경우, 그냥 return
-        return arrOfStr
+    var seperatedInputArr = inputString.components(separatedBy: " ") //1. " "를 기준으로 분리
+    if seperatedInputArr.count == 1{                                 //분리되지 않았을 경우, 그냥 return
+        return seperatedInputArr
     }
-    let tempArr = arrOfStr[1].components(separatedBy: ",")  //2. 1번에서 분리될 경우, outputUnit 부분을 ","기준으로 다시 분리
+    let tempArr = seperatedInputArr[1].components(separatedBy: ",")  //2. 1번에서 분리될 경우, outputUnit 부분을 ","기준으로 다시 분리
     if tempArr.count == 2 {                                 //2번에서 분리될 경우, 3개의 원소를 가진 배열로 분리
-        arrOfStr[1] = tempArr[0]
-        arrOfStr.append(tempArr[1])
+        seperatedInputArr[1] = tempArr[0]
+        seperatedInputArr.append(tempArr[1])
     }
-    return arrOfStr
+    return seperatedInputArr
 }
-//계산하는 함수(숫자값을 from단위에서 to단위로)
-func calculNum (numVal : Double,
-                fromUnit : (name : String?, category : unitsDic),
-                toUnit : (name : String?, category : unitsDic)) -> String {
+//입력받은 숫자값을 from단위에서 to단위로 변환하는 함수
+//입력 : 숫자값, from단위(inputUnit), to단위(outputUnit)
+//출력 : 바뀐숫자값과 to단위를 포함한 문자열
+func convertInputUnit (numVal : Double, fromUnit : (name : String?, category : UnitsDic), toUnit : (name : String?, category : UnitsDic)) -> String {
     var result : Double = 0.0                                                                  //*(단위범주)[단위이름] : 단위값
     result =  numVal * (fromUnit.category)[fromUnit.name!]! / (toUnit.category)[toUnit.name!]! //계산식 : 숫자 * from(inputUnit)단위값 / to(outputUnit)단위값
     return String(result) + toUnit.name! + " "
 }
 //단위를 찾는 함수(찾으면 해당 단위이름과 단위범주를 반환)
-func searchUnit (_ inputString : String) -> (name : String?, category : unitsDic){
-    for key in units.lengthDic.keys {
-        if inputString.hasSuffix(key) {return (key, units.lengthDic)}
+func searchUnit (_ inputString : String) -> (name : String?, category : UnitsDic){
+    for key in Units.lengthDictionary.keys {
+        if inputString.hasSuffix(key) {return (key, Units.lengthDictionary)}
     }
-    for key in units.weightDic.keys {
-        if inputString.hasSuffix(key) {return (key, units.weightDic)}
+    for key in Units.weightDictionary.keys {
+        if inputString.hasSuffix(key) {return (key, Units.weightDictionary)}
     }
-    for key in units.volumeDic.keys {
-        if inputString.hasSuffix(key) {return (key, units.volumeDic)}
+    for key in Units.volumeDictionary.keys {
+        if inputString.hasSuffix(key) {return (key, Units.volumeDictionary)}
     }
-    return (nil, units.error)
+    return (nil, Units.error)
 }
 //입력받은 문자열(inputstring)에서 숫자만 남겨서 반환하는 함수
 func sliceString (_ inputStr : String, _ unitName : String) -> Double {
@@ -62,18 +56,18 @@ func checkUnit (_ str : String?) -> Bool {
     return true
 }
 //안내문 출력 함수
-func printMsg () {
+func printMessage () {
     print("==== 지원가능한 단위 ====")
     var lenghtUnit : String = "길이 : "
     var weightUnit : String = "무게 : "
     var volumeUnit : String = "부피 : "
-    for key in units.lengthDic.keys {
+    for key in Units.lengthDictionary.keys {
         lenghtUnit += "\(key)" + " "
     }
-    for key in units.weightDic.keys {
+    for key in Units.weightDictionary.keys {
         weightUnit += "\(key)" + " "
     }
-    for key in units.volumeDic.keys {
+    for key in Units.volumeDictionary.keys {
         volumeUnit += "\(key)" + " "
     }
     print(lenghtUnit + "\n" + weightUnit + "\n" + volumeUnit)
@@ -88,7 +82,7 @@ func printResult (_ input : String...) {
     print(resultStr)
 }
 //단위변환 함수
-func unitConverter (_ inputString : String) {
+func convertUnit (_ inputString : String) {
     let strArr = seperateInputstr(inputString)
     let inputUnit = searchUnit(strArr[0])
     if checkUnit(inputUnit.name) == false { //inputUnit이 지원하는 단위인지 아닌지 체크
@@ -100,7 +94,7 @@ func unitConverter (_ inputString : String) {
         var resultArr : [String] = []
         for unit in inputUnit.category {
             if unit.key != inputUnit.name { //입력된 inputUnit을 제외한 같은 범주 내 모든 단위 출력
-                resultArr.append(calculNum(numVal : inputNum, fromUnit : inputUnit, toUnit : (unit.key, inputUnit.category)))
+                resultArr.append(convertInputUnit(numVal : inputNum, fromUnit : inputUnit, toUnit : (unit.key, inputUnit.category)))
             }
         }
         printResult(resultArr[0],resultArr[1],resultArr[2])
@@ -110,7 +104,7 @@ func unitConverter (_ inputString : String) {
         if checkUnit(outputUnit.name) == false {
             return
         }
-        let resultNum = calculNum(numVal : inputNum, fromUnit : inputUnit, toUnit : outputUnit)
+        let resultNum = convertInputUnit(numVal : inputNum, fromUnit : inputUnit, toUnit : outputUnit)
         printResult(resultNum)
         return
     case 3: //inputUnit + outputUnit1,outputUnit2을 입력했을 경우 ex) "180cm inch,m"
@@ -119,22 +113,22 @@ func unitConverter (_ inputString : String) {
         if checkUnit(outputUnit1.name) == false || checkUnit(outputUnit2.name) == false {
             return
         }
-        let resultNum1 = calculNum(numVal : inputNum, fromUnit : inputUnit, toUnit : outputUnit1)
-        let resultNum2 = calculNum(numVal : inputNum, fromUnit : inputUnit, toUnit : outputUnit2)
+        let resultNum1 = convertInputUnit(numVal : inputNum, fromUnit : inputUnit, toUnit : outputUnit1)
+        let resultNum2 = convertInputUnit(numVal : inputNum, fromUnit : inputUnit, toUnit : outputUnit2)
         printResult(resultNum1, resultNum2)
         return
     default:
         print("다시 입력해주세요.")
     }
 }
-var boolVal : Bool = true
-mainLoop: while boolVal {
-    printMsg()
+var runConverter : Bool = true
+mainLoop: while runConverter {
+    printMessage()
     let inputstring = readLine()
     if inputstring == "q" || inputstring == "quit" {
         break;
     }
     if let input = inputstring {
-        unitConverter(input)
+        convertUnit(input)
     }
 }
