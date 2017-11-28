@@ -31,7 +31,7 @@ func inputstrToArr (_ string : String) -> Array<String> {
 func calculNum (_ inputnum : Double, _ inputunit : (String?,[String:Double]), _ outputunit :(String?,[String:Double])) -> String {
     var result : Double = 0.0
         result =  inputnum * (inputunit.1)[inputunit.0!]! / (outputunit.1)[outputunit.0!]!
-    return String(result) + outputunit.0!
+    return String(result) + outputunit.0! + " "
 }
 //단위를 찾는 함수
 func searchUnit (_ inputString : String) -> (key : String?, unitDic : [String:Double]){
@@ -78,45 +78,48 @@ func printMsg () {
     print("=====================")
 }
 //결과값을 출력해주는 함수
-func printResult () {
-    
+func printResult (_ input : String...) {
+    var resultStr : String = "반환값 : "
+    for str in input {
+        resultStr += "\(str)" + " "
+    }
+    print(resultStr)
 }
 //단위변환 함수
 func unitConverter (_ inputString : String) {
     let strArr = inputstrToArr(inputString)
     let inputUnit = searchUnit(strArr[0])
-    if checkUnit(inputUnit.key) == false { //
+    if checkUnit(inputUnit.key) == false { //inputUnit이 지원하는 단위인지 아닌지 체크
         return
     }
     let inputNum = sliceString(strArr[0], inputUnit.key!)
     switch strArr.count {
-    case 0...1:
-        var resultStr : String = ""
+    case 0...1: //inputUnit만 입력했을 경우 ex) "180cm"
+        var resultArr : [String] = []
         for unit in inputUnit.unitDic {
             if unit.key != inputUnit.key {
-                resultStr += String(calculNum(inputNum, inputUnit, (unit.key, inputUnit.unitDic))) + unit.key + " "
+                resultArr.append(calculNum(inputNum, inputUnit, (unit.key, inputUnit.unitDic)))
             }
         }
-        print("변환값 : " + resultStr)
+        printResult(resultArr[0],resultArr[1],resultArr[2])
         return
-    case 2:
+    case 2:  //inputUnit + ouputUnit을 입력했을 경우 ex) "180cm inch"
         let outputUnit = searchUnit(strArr[1])
         if checkUnit(outputUnit.key) == false {
             return
         }
         let resultNum = calculNum(inputNum, inputUnit, outputUnit)
-        print("변환값 : " + "\(resultNum)" + outputUnit.key!)
+        printResult(resultNum)
         return
-    case 3:
+    case 3: //inputUnit + outputUnit1,outputUnit2을 입력했을 경우 ex) "180cm inch,m"
         let outputUnit1 = searchUnit(strArr[1])
         let outputUnit2 = searchUnit(strArr[2])
         if checkUnit(outputUnit1.key) == false || checkUnit(outputUnit2.key) == false {
             return
         }
-        var resultNum : String = ""
-        resultNum = String(calculNum(inputNum, inputUnit, outputUnit1)) + outputUnit1.key! + " " +
-                    String(calculNum(inputNum, inputUnit, outputUnit2)) + outputUnit2.key!
-        print("변환값 : " + resultNum)
+        let resultNum1 = calculNum(inputNum, inputUnit, outputUnit1)
+        let resultNum2 = calculNum(inputNum, inputUnit, outputUnit2)
+        printResult(resultNum1, resultNum2)
         return
     default:
         print("다시 입력해주세요.")
