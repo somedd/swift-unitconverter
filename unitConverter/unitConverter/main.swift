@@ -1,6 +1,5 @@
 import Foundation
 typealias UnitsDic = [String : Double] //하나의 단위범주 형태
-//calculNum 함수명도 함수의 시그니처를 보면 주석을 보지 않아도 동작과, 의미를 유추할 수 있도록 작성해주세요.
 //단위의 집합 구조체
 struct Units {
     static let lengthDictionary : UnitsDic = ["cm" : 1, "m" : 100, "inch" : 2.54, "yard" : 91.44]
